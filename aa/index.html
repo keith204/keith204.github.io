@@ -1,245 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Multi-City Flight Search</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f0f0f0;
-        text-align: left;
-        padding: 20px;
-    }
-    .button {
-        display: block;
-        margin: 10px;
-        padding: 15px 25px;
-        font-size: 16px;
-        color: white;
-        background-color: #007bff;
-        text-decoration: none;
-        border-radius: 5px;
-        width: 200px;
-        text-align: center;
-    }
-    .button:hover {
-        background-color: #0056b3;
-    }
-</style>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Existing code to load prices and bookmarks
-        const inputs = document.querySelectorAll('input[type="text"]');
-        inputs.forEach((input, index) => {
-            const savedPrice = localStorage.getItem('price_' + index);
-            if (savedPrice) {
-                input.value = savedPrice;
+    <meta charset="UTF-8">
+    <title>Multi-City Flight Search</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: left;
+            padding: 20px;
+        }
+
+        /* Button Styles */
+        .button {
+            display: block;
+            margin: 10px;
+            padding: 15px 25px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 5px;
+            width: 200px;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Date Picker Styles */
+        .date-picker {
+            margin-bottom: 20px;
+        }
+
+        /* Flight Option Styles */
+        .flight-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* Bookmark Styles */
+        .bookmark {
+            cursor: pointer;
+            font-size: 24px;
+            color: gray;
+            margin-right: 15px;
+        }
+        .bookmark.bookmarked {
+            color: gold;
+        }
+
+        /* Price Input Styles */
+        .price-input {
+            margin-left: 20px;
+            padding: 10px;
+            font-size: 16px;
+            width:400px;
+        }
+
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved prices
+            const inputs = document.querySelectorAll('.price-input');
+            inputs.forEach((input, index) => {
+                const savedPrice = localStorage.getItem('price_' + index);
+                if (savedPrice) {
+                    input.value = savedPrice;
+                }
+            });
+
+            // Load saved bookmarks
+            const bookmarks = document.querySelectorAll('.bookmark');
+            bookmarks.forEach((bookmark, index) => {
+                const savedBookmark = localStorage.getItem('bookmark_' + index);
+                if (savedBookmark === 'true') {
+                    bookmark.classList.add('bookmarked');
+                    bookmark.textContent = '★';
+                }
+            });
+
+            // Initialize date pickers
+            const leaveDateInput = document.getElementById('leaveDate');
+            const returnDateInput = document.getElementById('returnDate');
+
+            const savedLeaveDate = localStorage.getItem('leaveDate') || '2024-12-10';
+            const savedReturnDate = localStorage.getItem('returnDate') || '2025-01-09';
+
+            leaveDateInput.value = savedLeaveDate;
+            returnDateInput.value = savedReturnDate;
+
+            // Update button URLs
+            updateButtonUrls();
+
+            // Event listeners for date inputs
+            leaveDateInput.addEventListener('change', function() {
+                localStorage.setItem('leaveDate', leaveDateInput.value);
+                updateButtonUrls();
+            });
+
+            returnDateInput.addEventListener('change', function() {
+                localStorage.setItem('returnDate', returnDateInput.value);
+                updateButtonUrls();
+            });
+
+            function updateButtonUrls() {
+                const leaveDate = leaveDateInput.value;
+                const returnDate = returnDateInput.value;
+
+                const buttons = document.querySelectorAll('.button');
+                const baseUrl = 'https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal';
+                const extraParams = '&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal';
+
+                buttons.forEach(function(button) {
+                    const dest1 = button.getAttribute('data-dest1');
+
+                    const slices = [
+                        {"orig":"SGF","origNearby":false,"dest": dest1,"destNearby":false,"date": leaveDate},
+                        {"orig":"VCE","origNearby":false,"dest":"SGF","destNearby":false,"date": returnDate}
+                    ];
+
+                    const slicesStr = JSON.stringify(slices);
+                    const encodedSlices = encodeURIComponent(slicesStr);
+
+                    const fullUrl = baseUrl + '&slices=' + encodedSlices + extraParams;
+
+                    button.setAttribute('href', fullUrl);
+                });
             }
         });
 
-        const bookmarks = document.querySelectorAll('.bookmark');
-        bookmarks.forEach((bookmark, index) => {
-            const savedBookmark = localStorage.getItem('bookmark_' + index);
-            if (savedBookmark === 'true') {
-                bookmark.style.color = 'gold';
-                bookmark.textContent = '★';
-            }
-        });
-
-        // New code for dates and button URLs
-        const baseUrl = 'https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal';
-        const extraParams = '&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal';
-
-        const leaveDateInput = document.getElementById('leaveDate');
-        const returnDateInput = document.getElementById('returnDate');
-
-        const savedLeaveDate = localStorage.getItem('leaveDate') || '2024-12-10';
-        const savedReturnDate = localStorage.getItem('returnDate') || '2025-01-09';
-
-        leaveDateInput.value = savedLeaveDate;
-        returnDateInput.value = savedReturnDate;
-
-        // Update button URLs
-        updateButtonUrls();
-
-        // Add event listeners to date inputs
-        leaveDateInput.addEventListener('change', function() {
-            localStorage.setItem('leaveDate', leaveDateInput.value);
-            updateButtonUrls();
-        });
-
-        returnDateInput.addEventListener('change', function() {
-            localStorage.setItem('returnDate', returnDateInput.value);
-            updateButtonUrls();
-        });
-
-        function updateButtonUrls() {
-            const leaveDate = leaveDateInput.value;
-            const returnDate = returnDateInput.value;
-
-            const buttons = document.querySelectorAll('.button');
-
-            buttons.forEach(function(button) {
-                const dest1 = button.getAttribute('data-dest1');
-
-                const slices = [
-                    {"orig":"SGF","origNearby":false,"dest": dest1,"destNearby":false,"date": leaveDate},
-                    {"orig":"VCE","origNearby":false,"dest":"SGF","destNearby":false,"date": returnDate}
-                ];
-
-                const slicesStr = JSON.stringify(slices);
-                const encodedSlices = encodeURIComponent(slicesStr);
-
-                const fullUrl = baseUrl + '&slices=' + encodedSlices + extraParams;
-
-                button.setAttribute('href', fullUrl);
+        function savePrice(input) {
+            const inputs = document.querySelectorAll('.price-input');
+            inputs.forEach((el, index) => {
+                if (el === input) {
+                    localStorage.setItem('price_' + index, input.value);
+                }
             });
         }
-    });
 
-    function savePrice(input) {
-        const inputs = document.querySelectorAll('input[type="text"]');
-        inputs.forEach((el, index) => {
-            if (el === input) {
-                localStorage.setItem('price_' + index, input.value);
-            }
-        });
-    }
-
-    function toggleBookmark(star) {
-        const bookmarks = document.querySelectorAll('.bookmark');
-        bookmarks.forEach((el, index) => {
-            if (el === star) {
-                if (star.style.color === 'gray' || star.style.color === '') {
-                    star.style.color = 'gold';
-                    star.textContent = '★';
-                    localStorage.setItem('bookmark_' + index, 'true');
-                } else {
-                    star.style.color = 'gray';
-                    star.textContent = '☆';
-                    localStorage.setItem('bookmark_' + index, 'false');
+        function toggleBookmark(star) {
+            const bookmarks = document.querySelectorAll('.bookmark');
+            bookmarks.forEach((el, index) => {
+                if (el === star) {
+                    if (!star.classList.contains('bookmarked')) {
+                        star.classList.add('bookmarked');
+                        star.textContent = '★';
+                        localStorage.setItem('bookmark_' + index, 'true');
+                    } else {
+                        star.classList.remove('bookmarked');
+                        star.textContent = '☆';
+                        localStorage.setItem('bookmark_' + index, 'false');
+                    }
                 }
-            }
-        });
-    }
-</script>
+            });
+        }
+    </script>
 </head>
 <body>
     <h1>Multi-City Flight Search</h1>
-    <div style="margin-bottom: 20px;">
+    <div class="date-picker">
         Leave: <input type="date" id="leaveDate" value="2024-12-10">
         Return: <input type="date" id="returnDate" value="2025-01-09">
     </div>
 
     <h2>Poland</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="KRK" href="#" target="_blank">Kraków (KRK)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="WAW" href="#" target="_blank">Warsaw (WAW)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 
     <h2>Slovakia</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="BTS" href="#" target="_blank">Bratislava (BTS)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 
     <h2>Czech Republic</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="PRG" href="#" target="_blank">Prague (PRG)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 
     <h2>Austria</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="VIE" href="#" target="_blank">Vienna (VIE)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 
     <h2>Italy</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="MXP" href="#" target="_blank">Milan (MXP)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="VCE" href="#" target="_blank">Venice (VCE)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 
     <h2>Germany</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="MUC" href="#" target="_blank">Munich (MUC)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="FRA" href="#" target="_blank">Frankfurt (FRA)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 
     <h2>Spain</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="MAD" href="#" target="_blank">Madrid (MAD)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="BCN" href="#" target="_blank">Barcelona (BCN)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 
     <h2>France</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="CDG" href="#" target="_blank">Paris (CDG)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 
     <h2>United Kingdom</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="LHR" href="#" target="_blank">London Heathrow (LHR)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 
     <h2>Netherlands</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="AMS" href="#" target="_blank">Amsterdam (AMS)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 
     <h2>Switzerland</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="ZRH" href="#" target="_blank">Zurich (ZRH)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 
     <h2>Ireland</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="DUB" href="#" target="_blank">Dublin (DUB)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 
     <h2>Portugal</h2>
-    <div style="display: flex; align-items: center; margin-bottom: 20px;">
-        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+    <div class="flight-option">
+        <span class="bookmark" onclick="toggleBookmark(this)">☆</span>
         <a class="button" data-dest1="LIS" href="#" target="_blank">Lisbon (LIS)</a>
-        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+        <input type="text" class="price-input" placeholder="Enter price" oninput="savePrice(this)" />
     </div>
 </body>
 </html>
