@@ -8,11 +8,11 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
-            text-align: center;
+            text-align: left;
             padding: 20px;
         }
         .button {
-            display: inline-block;
+            display: block;
             margin: 10px;
             padding: 15px 25px;
             font-size: 16px;
@@ -20,27 +20,143 @@
             background-color: #007bff;
             text-decoration: none;
             border-radius: 5px;
-        }
+        
+            width: 200px;
+            text-align: center;
         .button:hover {
             background-color: #0056b3;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[type="text"]');
+            inputs.forEach((input, index) => {
+                const savedPrice = localStorage.getItem('price_' + index);
+                if (savedPrice) {
+                    input.value = savedPrice;
+                }
+            });
+
+            const bookmarks = document.querySelectorAll('.bookmark');
+            bookmarks.forEach((bookmark, index) => {
+                const savedBookmark = localStorage.getItem('bookmark_' + index);
+                if (savedBookmark === 'true') {
+                    bookmark.style.color = 'gold';
+                    bookmark.textContent = '★';
+                }
+            });
+        });
+
+        function savePrice(input) {
+            const inputs = document.querySelectorAll('input[type="text"]');
+            inputs.forEach((el, index) => {
+                if (el === input) {
+                    localStorage.setItem('price_' + index, input.value);
+                }
+            });
+        }
+
+        function toggleBookmark(star) {
+            const bookmarks = document.querySelectorAll('.bookmark');
+            bookmarks.forEach((el, index) => {
+                if (el === star) {
+                    if (star.style.color === 'gray') {
+                        star.style.color = 'gold';
+                        star.textContent = '★';
+                        localStorage.setItem('bookmark_' + index, 'true');
+                    } else {
+                        star.style.color = 'gray';
+                        star.textContent = '☆';
+                        localStorage.setItem('bookmark_' + index, 'false');
+                    }
+                }
+            });
+        }
+    </script>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[type="text"]');
+            inputs.forEach((input, index) => {
+                const savedPrice = localStorage.getItem('price_' + index);
+                if (savedPrice) {
+                    input.value = savedPrice;
+                }
+            });
+        });
+
+        function savePrice(input) {
+            const inputs = document.querySelectorAll('input[type="text"]');
+            inputs.forEach((el, index) => {
+                if (el === input) {
+                    localStorage.setItem('price_' + index, input.value);
+                }
+            });
+        }
+    </script>
 </head>
 <body>
     <h1>Multi-City Flight Search</h1>
     <p>Click on an airport to search for flights:</p>
-    
-    <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22KRK%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal">Kraków, Poland (KRK)</a>
 
-    <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22BTS%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal">Bratislava, Slovakia (BTS)</a>
+    <h2>Poland</h2>
+    <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
+        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+        <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22KRK%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal" target="_blank">Kraków (KRK)</a>
+        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+    </div>
+    <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
+        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+        <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22WAW%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal" target="_blank">Warsaw (WAW)</a>
+        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+    </div>
 
-    <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22PRG%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal">Prague, Czech Republic (PRG)</a>
+    <h2>Slovakia</h2>
 
-    <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22VIE%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal">Vienna, Austria (VIE)</a>
+    <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
+        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+        <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22BTS%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal" target="_blank">Bratislava (BTS)</a>
+        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+    </div>
 
-    <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22MUC%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal">Munich, Germany (MUC)</a>
+    <h2>Czech Republic</h2>
 
-    <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22MXP%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal">Milan, Italy (MXP)</a>
+    <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
+        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+        <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22PRG%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal" target="_blank">Prague (PRG)</a>
+        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+    </div>
 
+    <h2>Austria</h2>
+
+    <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
+        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+        <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22VIE%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal" target="_blank">Vienna (VIE)</a>
+        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+    </div>
+
+    <h2>Italy</h2>
+    <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
+        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+        <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22MXP%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal" target="_blank">Milan (MXP)</a>
+        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+    </div>
+    <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
+        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+        <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22VCE%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal" target="_blank">Venice (VCE)</a>
+        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+    </div>
+
+<h2>Germany</h2>
+
+<div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
+        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+        <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22MUC%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal" target="_blank">Munich (MUC)</a>
+        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+    </div>
+    <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
+        <span class="bookmark" onclick="toggleBookmark(this)" style="cursor: pointer; font-size: 24px; color: gray; margin-right: 15px;">☆</span>
+        <a class="button" href="https://www.aa.com/booking/search?locale=en_US&fareType=Lowest&pax=6&adult=2&child=3&youth=1&type=MultiCity&searchType=Revenue&cabin=&carriers=AA&travelType=personal&slices=%5B%7B%22orig%22:%22SGF%22,%22origNearby%22:false,%22dest%22:%22FRA%22,%22destNearby%22:false,%22date%22:%222024-12-10%22%7D,%7B%22orig%22:%22VCE%22,%22origNearby%22:false,%22dest%22:%22SGF%22,%22destNearby%22:false,%22date%22:%222025-01-09%22%7D%5D&pos=US&pcodes=CB2-Z&gdtc=400021,400113,500010,500012,500013,700002&ltier=Regular&ttype=personal" target="_blank">Frankfurt (FRA)</a>
+        <input type="text" placeholder="Enter price" style="margin-left: 20px; padding: 10px; font-size: 16px;" oninput="savePrice(this)" />
+    </div>
 </body>
 </html>
